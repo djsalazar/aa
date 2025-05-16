@@ -1,0 +1,305 @@
+/* multi.css */
+:root {
+    --primary-color: #003366;
+    --secondary-color: #0056b3;
+    --accent-color: #ff8c00;
+    --highlight-color: #f0ad4e;
+    --light-bg: #f8f9fa;
+    --medium-bg: #e9ecef;
+    --dark-text: #212529;
+    --light-text: #ffffff;
+    --border-color: #dee2e6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --border-radius: 8px;
+    --panel-width: 400px; /* Ancho del panel de detalles */
+    --header-height: 120px; /* Altura aproximada del header */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    height: 100%;
+    overflow: hidden; /* Evitar scrollbars en el body, manejar scroll en áreas específicas */
+    font-family: var(--font-family);
+    background-color: var(--light-bg);
+    color: var(--dark-text);
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.app-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--light-text);
+    padding: 1em 1.5em;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    z-index: 100;
+    /* height: var(--header-height); */ /* Opcional si se quiere altura fija */
+}
+
+.app-header h1 {
+    font-size: 1.8em;
+    margin-bottom: 0.5em;
+    text-align: center;
+}
+
+.controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+}
+
+.controls-bar label {
+    margin-right: 0.3em;
+}
+
+.controls-bar select,
+.controls-bar button {
+    padding: 0.5em 0.8em;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    background-color: var(--light-text);
+    color: var(--primary-color);
+    font-size: 0.9em;
+}
+.controls-bar button {
+    background-color: var(--accent-color);
+    color: var(--light-text);
+    border-color: var(--accent-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.controls-bar button:hover {
+    background-color: var(--highlight-color);
+}
+
+
+.main-content {
+    display: flex;
+    flex-grow: 1; /* Ocupa el espacio restante */
+    overflow: hidden; /* Evita que el main-content cause scrollbars */
+    position: relative; /* Para el posicionamiento del panel */
+}
+
+.grafo-container {
+    flex-grow: 1;
+    position: relative; /* Para el placeholder y el SVG */
+    background-color: #f0f2f5; /* Un fondo ligeramente diferente para el grafo */
+    border-right: 1px solid var(--border-color);
+    overflow: hidden; /* El SVG de D3 manejará su propio zoom/pan */
+}
+
+.grafo-container .loading-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #777;
+    font-size: 1.2em;
+}
+
+.grafo-container svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+.grafo-container svg:active {
+    cursor: grabbing;
+}
+
+.panel-detalles {
+    width: var(--panel-width);
+    flex-shrink: 0;
+    background-color: var(--light-text);
+    border-left: 1px solid var(--border-color);
+    padding: 1.5em;
+    overflow-y: auto; /* Scroll si el contenido es largo */
+    box-shadow: -2px 0 8px var(--shadow-color);
+    position: fixed; /* O absolute si main-content es el contexto */
+    right: 0;
+    top: var(--header-height); /* Debajo del header */
+    bottom: 0; /* O hasta el footer si hay footer fijo */
+    transform: translateX(100%); /* Oculto por defecto */
+    transition: transform 0.3s ease-in-out;
+    z-index: 90;
+}
+
+.panel-detalles.visible {
+    transform: translateX(0);
+}
+
+.cerrar-panel {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0.2em;
+    line-height: 1;
+}
+.cerrar-panel:hover {
+    color: var(--dark-text);
+}
+
+.contenido-panel h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1em;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.5em;
+}
+
+.placeholder-panel {
+    color: #777;
+    font-style: italic;
+    text-align: center;
+    margin-top: 2em;
+}
+
+.seccion-capa6-detalles {
+    margin-top: 1.5em;
+    padding-top: 1.5em;
+    border-top: 1px dashed var(--border-color);
+}
+.seccion-capa6-detalles h4 {
+    color: var(--secondary-color);
+    margin-bottom: 0.8em;
+    font-size: 1.1em;
+}
+
+/* Estilos para nodos D3.js (Grafo Principal) */
+.node-group { cursor: pointer; }
+.node-group circle {
+    stroke-width: 2px;
+    transition: r 0.2s ease, stroke 0.2s ease;
+}
+.node-group text {
+    font-size: 10px;
+    paint-order: stroke;
+    stroke: white;
+    stroke-width: 3px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    text-anchor: middle;
+    pointer-events: none; /* Para que el clic pase al círculo */
+    fill: var(--dark-text);
+}
+.node-group.selected circle {
+    stroke: var(--accent-color) !important; /* Borde resaltado para nodo seleccionado */
+    stroke-width: 3px;
+}
+
+/* Colores para tipos de nodo (ejemplo, ajustar en JS) */
+.node-tipo-actividad_c1 circle { fill: #1f77b4; } /* Azul */
+.node-tipo-taxonomia_c2 circle { fill: #ff7f0e; } /* Naranja */
+.node-tipo-concepto_c3 circle { fill: #2ca02c; } /* Verde */
+.node-tipo-competencia_c4 circle { fill: #d62728; } /* Rojo */
+.node-tipo-evaluacion_c5 circle { fill: #9467bd; } /* Púrpura */
+.node-tipo-validacion_c6 circle { fill: #8c564b; } /* Marrón */
+.node-tipo-validador circle { fill: #e377c2; } /* Rosa */
+
+
+.link-graph {
+    stroke: #999;
+    stroke-opacity: 0.6;
+    stroke-width: 1.5px;
+}
+.link-graph.highlighted {
+    stroke: var(--accent-color);
+    stroke-opacity: 1;
+    stroke-width: 2.5px;
+}
+
+/* Tooltip global para D3 */
+.tooltip {
+    position: absolute;
+    text-align: left;
+    padding: 8px 12px;
+    font: 12px var(--font-family);
+    background: rgba(250, 250, 250, 0.95);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    pointer-events: none; /* No interfiere con el mouse */
+    opacity: 0;
+    box-shadow: 0 3px 10px var(--shadow-color);
+    max-width: 350px;
+    z-index: 10000;
+    transition: opacity 0.2s;
+}
+.tooltip strong { color: var(--primary-color); display: block; margin-bottom: 4px; }
+.tooltip p {margin: 2px 0;}
+
+/* Estilos para visualizaciones dentro del panel de detalles (Capa 6) */
+.capa6-details .radial-chart-container svg,
+.capa6-details .consensus-network-container svg {
+    width: 100%;
+    height: auto;
+    max-height: 300px; /* Ajustar según sea necesario */
+    display: block;
+    margin: 0 auto 1em auto;
+}
+.capa6-details .heatmap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8em;
+    margin-bottom: 1em;
+}
+.capa6-details .heatmap-table th,
+.capa6-details .heatmap-table td {
+    border: 1px solid var(--border-color);
+    padding: 4px 6px;
+    text-align: center;
+}
+.capa6-details .heatmap-table th {
+    background-color: var(--medium-bg);
+}
+.capa6-details .lista-jerarquica { font-size: 0.9em; }
+
+
+.app-footer {
+    text-align: center;
+    padding: 1em;
+    background-color: var(--dark-text);
+    color: var(--light-bg);
+    font-size: 0.85em;
+    flex-shrink: 0; /* No se encoge */
+}
+
+/* Ajustes para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .app-header h1 { font-size: 1.5em; }
+    .controls-bar { flex-direction: column; align-items: stretch; gap: 0.5em; }
+    .controls-bar select, .controls-bar button { width: 100%; }
+
+    .main-content { flex-direction: column; } /* Grafo arriba, panel abajo o modal */
+    .panel-detalles {
+        width: 100%;
+        max-height: 50vh; /* Limitar altura en móviles si está abajo */
+        position: relative; /* O cambiar a modal completo */
+        transform: translateX(0); /* Siempre visible o gestionado por JS para modal */
+        border-left: none;
+        border-top: 2px solid var(--border-color);
+        top: auto; /* Resetear top si no es fijo */
+        box-shadow: 0 -2px 8px var(--shadow-color);
+    }
+    .grafo-container {
+        height: 50vh; /* Darle una altura definida en móviles */
+        border-right: none;
+    }
+    :root { --header-height: auto; } /* Resetear para layout móvil */
+}

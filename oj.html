@@ -1,0 +1,2957 @@
+<div id="node-details" class="node-details">
+    <div class="node-details-header">
+        <h3 class="node-details-title" id="node-details-title">Detalle del Nodo</h3>
+        <button class="node-details-close" id="node-details-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="node-details-body" id="node-details-body">
+        <!-- Contenido dinámico -->
+    </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Modelo Ontológico Judicial</h3>
+                <p>
+                    Una arquitectura semántica formal que organiza, conecta y potencia el conocimiento académico-jurídico institucional para la formación judicial en Guatemala.
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>Componentes</h3>
+                <p>
+                    <i class="fas fa-layer-group mr-2"></i> Clasificación Académico-Administrativa<br>
+                    <i class="fas fa-sitemap mr-2"></i> Clasificación Temático-Taxonómica<br>
+                    <i class="fas fa-brain mr-2"></i> Taxonomía Global Enriquecida (Ontología)
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>Tecnologías</h3>
+                <p>
+                    <i class="fas fa-code mr-2"></i> Representación formal RDF/OWL<br>
+                    <i class="fas fa-database mr-2"></i> Triplestore RDF<br>
+                    <i class="fas fa-search mr-2"></i> Consultas SPARQL<br>
+                    <i class="fas fa-robot mr-2"></i> Asistencia IA/Human-in-the-Loop
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Organismo Judicial de Guatemala · Escuela de Estudios Judiciales · 2025</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Highlight.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/sparql.min.js"></script>
+
+<script>
+    // Initialize code highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+        hljs.highlightAll();
+    });
+    
+    // Tabs functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Update active content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabId}-content`).classList.add('active');
+        });
+    });
+    
+    // Mobile navigation
+    document.getElementById('mobile-nav-toggle').addEventListener('click', () => {
+        document.getElementById('nav-links').classList.toggle('active');
+    });
+    
+    // Navigation active link on scroll
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('section');
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.clientHeight;
+            
+            if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                currentSection = section.getAttribute('id');
+            }
+        });
+        
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${currentSection}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+    
+    // Field example toggle functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.field-example-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                
+                this.classList.toggle('active');
+                targetContent.classList.toggle('active');
+                
+                const icon = this.querySelector('i');
+                if (icon) {
+                    if (this.classList.contains('active')) {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    } else {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    }
+                }
+            });
+        });
+    });
+    
+    // Copy to clipboard functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const copyButtons = [
+            { buttonId: 'copy-capa1', codeId: 'code-capa1' },
+            { buttonId: 'copy-capa2', codeId: 'code-capa2' },
+            { buttonId: 'copy-capa3', codeId: 'code-capa3' },
+            { buttonId: 'copy-sparql', codeId: 'sparql-query' }
+        ];
+        
+        copyButtons.forEach(({ buttonId, codeId }) => {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.addEventListener('click', () => {
+                    const codeElement = document.getElementById(codeId);
+                    if (codeElement) {
+                        const text = codeElement.textContent;
+                        navigator.clipboard.writeText(text)
+                            .then(() => showTooltip('Copiado al portapapeles'))
+                            .catch(() => showTooltip('Error al copiar'));
+                    }
+                });
+            }
+        });
+    });
+    
+    // Show tooltip
+    function showTooltip(message) {
+        const tooltip = document.getElementById('tooltip');
+        if (!tooltip) return;
+        
+        tooltip.textContent = message;
+        tooltip.style.opacity = '1';
+        
+        // Position tooltip
+        tooltip.style.left = '50%';
+        tooltip.style.top = '20px';
+        tooltip.style.transform = 'translateX(-50%)';
+        
+        // Hide after delay
+        setTimeout(() => {
+            tooltip.style.opacity = '0';
+        }, 2000);
+    }
+    
+    // Node details
+    const nodeDetails = document.getElementById('node-details');
+    const nodeDetailsClose = document.getElementById('node-details-close');
+    
+    if (nodeDetails && nodeDetailsClose) {
+        nodeDetailsClose.addEventListener('click', () => {
+            nodeDetails.classList.remove('active');
+        });
+    }
+    
+    // Cytoscape initialization with sample data
+    document.addEventListener('DOMContentLoaded', () => {
+        const cyContainer = document.getElementById('cy');
+        if (!cyContainer) return;
+        
+        initCytoscape();
+    });
+    
+    function initCytoscape() {
+        // Create Cytoscape instance
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#666',
+                        'label': 'data(label)',
+                        'color': '#fff',
+                        'text-outline-width': 2,
+                        'text-outline-color': '#333',
+                        'text-valign': 'center',
+                        'text-halign': 'center',
+                        'font-size': '10px',
+                        'width': 30,
+                        'height': 30,
+                        'text-wrap': 'wrap',
+                        'text-max-width': '80px',
+                        'transition-property': 'background-color, border-color, border-width',
+                        'transition-duration': '0.3s'
+                    }
+                },
+                {
+                    selector: 'node[type = "course"]',
+                    style: {
+                        'background-color': '#f59e0b',
+                        'text-outline-color': '#d97706',
+                        'shape': 'round-rectangle'
+                    }
+                },
+                {
+                    selector: 'node[type = "competency"]',
+                    style: {
+                        'background-color': '#3b82f6',
+                        'text-outline-color': '#1d4ed8',
+                        'shape': 'ellipse'
+                    }
+                },
+                {
+                    selector: 'node[type = "concept"]',
+                    style: {
+                        'background-color': '#10b981',
+                        'text-outline-color': '#059669',
+                        'shape': 'hexagon'
+                    }
+                },
+                {
+                    selector: 'node[type = "normative"]',
+                    style: {
+                        'background-color': '#ef4444',
+                        'text-outline-color': '#b91c1c',
+                        'shape': 'diamond'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 1.5,
+                        'line-color': '#9ca3af',
+                        'curve-style': 'bezier',
+                        'target-arrow-shape': 'triangle',
+                        'target-arrow-color': '#9ca3af',
+                        'opacity': 0.7,
+                        'target-endpoint': 'outside-to-node-or-label',
+                        'source-endpoint': 'outside-to-node-or-label',
+                        'transition-property': 'line-color, target-arrow-color, opacity, width',
+                        'transition-duration': '0.3s'
+                    }
+                },
+                {
+                    selector: 'edge[label = "desarrolla"]',
+                    style: {
+                        'line-color': '#3b82f6',
+                        'target-arrow-color': '#3b82f6'
+                    }
+                },
+                {
+                    selector: 'edge[label = "apoya"]',
+                    style: {
+                        'line-color': '#10b981',
+                        'target-arrow-color': '#10b981'
+                    }
+                },
+                {
+                    selector: 'edge[label = "incluye"]',
+                    style: {
+                        'line-color': '#f59e0b',
+                        'target-arrow-color': '#f59e0b'
+                    }
+                },
+                {
+                    selector: 'edge[label = "reguladoPor"]',
+                    style: {
+                        'line-color': '#ef4444',
+                        'target-arrow-color': '#ef4444'
+                    <!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo Ontológico para la Formación Judicial</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Highlight.js for code syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+
+<!-- Cytoscape for graph visualization -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #60a5fa;
+        --secondary: #0ea5e9;
+        --secondary-dark: #0284c7;
+        --secondary-light: #7dd3fc;
+        --tertiary: #10b981;
+        --tertiary-dark: #059669;
+        --accent: #f59e0b;
+        --accent-dark: #d97706;
+        --accent-light: #fcd34d;
+        --text: #1f2937;
+        --text-light: #6b7280;
+        --text-dark: #111827;
+        --light: #f9fafb;
+        --dark: #111827;
+        --success: #22c55e;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --background: #f3f4f6;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        --font-heading: 'Poppins', var(--font-sans);
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 80px;
+    }
+    
+    body {
+        font-family: var(--font-sans);
+        background-color: var(--background);
+        color: var(--text);
+        overflow-x: hidden;
+        line-height: 1.6;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        font-weight: 600;
+        color: var(--text-dark);
+        line-height: 1.3;
+    }
+    
+    a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    
+    a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+    
+    /* Header Styles */
+    header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 1000;
+        padding: 1rem 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+    
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .logo-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    }
+    
+    .logo-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        line-height: 1.2;
+    }
+    
+    .logo-text span {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-light);
+    }
+    
+    .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+    }
+    
+    .nav-link {
+        font-weight: 500;
+        color: var(--text);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        padding: 0.5rem 0;
+        position: relative;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+        color: var(--primary);
+    }
+    
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--primary);
+        border-radius: 2px;
+    }
+    
+    .mobile-nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text);
+        cursor: pointer;
+    }
+    
+    /* Main Content Styles */
+    main {
+        padding-top: 6rem;
+        padding-bottom: 3rem;
+    }
+    
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+    
+    section {
+        margin-bottom: 5rem;
+    }
+    
+    section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .section-header {
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+    
+    .section-title {
+        font-size: 2.25rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        max-width: 36rem;
+    }
+    
+    /* Card Styles */
+    .card {
+        background-color: var(--card);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Ontology Layers Styles */
+    .ontology-layers {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .layer-card {
+        background-color: var(--card);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .layer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .layer-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        z-index: 1;
+    }
+    
+    .layer-1::before {
+        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    }
+    
+    .layer-2::before {
+        background: linear-gradient(90deg, var(--secondary), var(--secondary-light));
+    }
+    
+    .layer-3::before {
+        background: linear-gradient(90deg, var(--tertiary), var(--tertiary-dark));
+    }
+    
+    .layer-header {
+        padding: 1.5rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background-color: white;
+    }
+    
+    .layer-icon {
+        font-size: 1.5rem;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .layer-1 .layer-icon {
+        background-color: rgba(37, 99, 235, 0.1);
+        color: var(--primary);
+    }
+    
+    .layer-2 .layer-icon {
+        background-color: rgba(14, 165, 233, 0.1);
+        color: var(--secondary);
+    }
+    
+    .layer-3 .layer-icon {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--tertiary);
+    }
+    
+    .layer-title-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .layer-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .layer-subtitle {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-top: 0.25rem;
+    }
+    
+    .layer-1 .layer-title {
+        color: var(--primary);
+    }
+    
+    .layer-2 .layer-title {
+        color: var(--secondary);
+    }
+    
+    .layer-3 .layer-title {
+        color: var(--tertiary);
+    }
+    
+    .layer-body {
+        padding: 1.5rem;
+        flex: 1;
+        position: relative;
+    }
+    
+    .layer-description {
+        margin-bottom: 1.5rem;
+        color: var(--text-light);
+        font-size: 0.95rem;
+    }
+    
+    .field-list {
+        list-style: none;
+    }
+    
+    .field-item {
+        margin-bottom: 1.25rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .field-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .field-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .field-name i {
+        color: var(--primary);
+        font-size: 0.875rem;
+    }
+    
+    .layer-1 .field-name i {
+        color: var(--primary);
+    }
+    
+    .layer-2 .field-name i {
+        color: var(--secondary);
+    }
+    
+    .layer-3 .field-name i {
+        color: var(--tertiary);
+    }
+    
+    .field-description {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+    }
+    
+    .field-example {
+        font-size: 0.75rem;
+        font-family: 'Courier New', monospace;
+        background-color: var(--light);
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        margin-top: 0.25rem;
+        color: var(--text);
+        overflow-x: auto;
+        position: relative;
+    }
+    
+    .field-example-toggle {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--primary);
+        margin-top: 0.25rem;
+        cursor: pointer;
+    }
+    
+    .field-example-toggle i {
+        margin-right: 0.25rem;
+        transition: transform 0.2s ease;
+    }
+    
+    .field-example-toggle.active i {
+        transform: rotate(180deg);
+    }
+    
+    .field-example-content {
+        display: none;
+        margin-top: 0.5rem;
+    }
+    
+    .field-example-content.active {
+        display: block;
+    }
+    
+    /* Sample JSON Styles */
+    .code-container {
+        margin: 2rem 0;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        background-color: white;
+    }
+    
+    .code-header {
+        background-color: #f1f5f9;
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .code-title {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .code-title i {
+        color: var(--primary);
+    }
+    
+    .code-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .code-action {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .code-action:hover {
+        background-color: #e2e8f0;
+        color: var(--text-dark);
+    }
+    
+    .code-content {
+        max-height: 500px;
+        overflow-y: auto;
+        background-color: #ffffff;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .code-content pre {
+        margin: 0;
+        padding: 1rem;
+    }
+    
+    /* Tabs Styles */
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .tab {
+        padding: 0.75rem 1.25rem;
+        font-weight: 500;
+        color: var(--text-light);
+        cursor: pointer;
+        white-space: nowrap;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .tab:hover {
+        color: var(--primary);
+    }
+    
+    .tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    /* Graph Styles */
+    .graph-container {
+        width: 100%;
+        height: 500px;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        background-color: white;
+        margin: 2rem 0;
+        position: relative;
+    }
+    
+    .graph-controls {
+        padding: 1rem;
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--border);
+        background-color: white;
+    }
+    
+    .graph-btn {
+        background-color: var(--light);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .graph-btn:hover {
+        background-color: var(--primary-light);
+        color: white;
+        border-color: var(--primary-light);
+    }
+    
+    .graph-btn.active {
+        background-color: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+    
+    .graph-display {
+        width: 100%;
+        height: calc(500px - 3.5rem);
+        position: relative;
+    }
+    
+    /* Legend Styles */
+    .graph-legend {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+        max-width: 250px;
+        backdrop-filter: blur(4px);
+        border: 1px solid var(--border);
+    }
+    
+    .legend-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .legend-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .badge-primary {
+        background-color: rgba(37, 99, 235, 0.1);
+        color: var(--primary);
+    }
+    
+    .badge-secondary {
+        background-color: rgba(14, 165, 233, 0.1);
+        color: var(--secondary);
+    }
+    
+    .badge-tertiary {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--tertiary);
+    }
+    
+    .badge-accent {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--accent);
+    }
+    
+    /* Alert Box */
+    .alert {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 1.5rem 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .alert-info {
+        background-color: rgba(59, 130, 246, 0.1);
+        border-left: 4px solid var(--info);
+    }
+    
+    .alert-icon {
+        color: var(--info);
+        font-size: 1.25rem;
+        margin-top: 0.125rem;
+    }
+    
+    .alert-content {
+        flex: 1;
+    }
+    
+    .alert-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--info);
+    }
+    
+    .alert-message {
+        font-size: 0.875rem;
+        color: var(--text);
+    }
+    
+    /* SQL Conversion Section */
+    .conversion-section {
+        margin-top: 3rem;
+    }
+    
+    .conversion-steps {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .conversion-step {
+        background-color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        position: relative;
+        padding-left: 3.5rem;
+    }
+    
+    .step-number {
+        position: absolute;
+        left: 1rem;
+        top: 1.5rem;
+        width: 30px;
+        height: 30px;
+        background-color: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .step-title {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+    }
+    
+    /* Footer Styles */
+    footer {
+        background-color: var(--text-dark);
+        color: white;
+        padding: 3rem 0 2rem;
+    }
+    
+    .footer-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+    
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+    
+    .footer-section h3 {
+        color: white;
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+    
+    .footer-section h3::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 2px;
+        background-color: var(--primary);
+    }
+    
+    .footer-section p {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1rem;
+    }
+    
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        margin-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.875rem;
+    }
+    
+    /* Node Details Panel */
+    .node-details {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 100vh;
+        background-color: white;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 900;
+        transition: width 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .node-details.active {
+        width: 400px;
+    }
+    
+    .node-details-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .node-details-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .node-details-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-light);
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    
+    .node-details-close:hover {
+        color: var(--danger);
+    }
+    
+    .node-details-body {
+        padding: 1.5rem;
+        overflow-y: auto;
+        height: calc(100vh - 73px);
+    }
+    
+    /* Tooltip */
+    .tooltip {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        max-width: 250px;
+        z-index: 1000;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    
+    /* Schema Visualization */
+    .schema-visualization {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .schema-table {
+        background-color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .schema-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .schema-table-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .schema-table-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1rem;
+    }
+    
+    .schema-columns {
+        display: grid;
+        grid-template-columns: minmax(150px, 1fr) minmax(100px, 1fr) 2fr;
+        gap: 0.5rem;
+    }
+    
+    .schema-column-header {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-light);
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .schema-column {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .schema-column:nth-child(3n+1) {
+        font-weight: 500;
+    }
+    
+    .schema-column:nth-child(3n+2) {
+        color: var(--text-light);
+    }
+    
+    .schema-relations {
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .schema-relations-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .schema-relation {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .schema-relation i {
+        color: var(--primary);
+        font-size: 0.75rem;
+    }
+    
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .feature-card {
+        background-color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .feature-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-dark);
+    }
+    
+    .feature-description {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        flex: 1;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    .delay-100 { animation-delay: 0.1s; opacity: 0; }
+    .delay-200 { animation-delay: 0.2s; opacity: 0; }
+    .delay-300 { animation-delay: 0.3s; opacity: 0; }
+    .delay-400 { animation-delay: 0.4s; opacity: 0; }
+    .delay-500 { animation-delay: 0.5s; opacity: 0; }
+    
+    /* SQL Formatter */
+    .sql-formatter {
+        margin-top: 2rem;
+        background-color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .sql-input {
+        margin-bottom: 1rem;
+    }
+    
+    .sql-textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+        min-height: 150px;
+        resize: vertical;
+    }
+    
+    .sql-output {
+        margin-top: 1rem;
+    }
+    
+    /* Graph Connectors */
+    .graph-connectors {
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+        position: relative;
+    }
+    
+    .graph-connector {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        width: 150px;
+        text-align: center;
+    }
+    
+    .connector-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: white;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .connector-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-light);
+    }
+    
+    .connector-line {
+        position: absolute;
+        top: 24px;
+        left: 20%;
+        width: 60%;
+        height: 2px;
+        background-color: var(--border);
+        z-index: 1;
+    }
+    
+    /* Feature Icon Colors */
+    .feature-icon-primary {
+        background-color: rgba(37, 99, 235, 0.1);
+        color: var(--primary);
+    }
+    
+    .feature-icon-secondary {
+        background-color: rgba(14, 165, 233, 0.1);
+        color: var(--secondary);
+    }
+    
+    .feature-icon-tertiary {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--tertiary);
+    }
+    
+    .feature-icon-accent {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--accent);
+    }
+    
+    .tree-demo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .tree-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: relative;
+        width: 200px;
+        z-index: 2;
+    }
+    
+    .tree-level {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .tree-connector {
+        position: absolute;
+        background-color: var(--border);
+        z-index: 1;
+    }
+    
+    .vertical-connector {
+        width: 2px;
+        height: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        top: -1.5rem;
+    }
+    
+    .horizontal-connector {
+        height: 2px;
+        top: -0.75rem;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            flex-direction: column;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid var(--border);
+        }
+        
+        .nav-links.active {
+            display: flex;
+        }
+        
+        .mobile-nav-toggle {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+        }
+        
+        .layer-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .node-details.active {
+            width: 100%;
+        }
+        
+        .schema-columns {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .schema-column-header:nth-child(3),
+        .schema-column:nth-child(3n) {
+            display: none;
+        }
+    }
+    
+    /* Utility Classes */
+    .text-center { text-align: center; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-5 { margin-bottom: 1.5rem; }
+    .mb-6 { margin-bottom: 2rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-3 { margin-top: 0.75rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mt-5 { margin-top: 1.5rem; }
+    .mt-6 { margin-top: 2rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .w-full { width: 100%; }
+    .hidden { display: none; }
+</style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <div class="logo-text">
+                Modelo Ontológico Judicial
+                <span>Escuela de Estudios Judiciales</span>
+            </div>
+        </div>
+        
+        <nav>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#intro" class="nav-link active">Introducción</a></li>
+                <li><a href="#layers" class="nav-link">Capas Ontológicas</a></li>
+                <li><a href="#data-structure" class="nav-link">Estructura de Datos</a></li>
+                <li><a href="#semantic-connections" class="nav-link">Conexiones Semánticas</a></li>
+                <li><a href="#sql-integration" class="nav-link">Integración SQL</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section id="intro" class="fade-in">
+        <div class="container">
+            <div class="section-header">
+                <h1 class="section-title">Modelo Ontológico para la Formación Judicial</h1>
+                <p class="section-subtitle">Una arquitectura semántica formal que organiza, conecta y potencia el conocimiento académico-jurídico institucional del Organismo Judicial de Guatemala.</p>
+            </div>
+            
+            <div class="card">
+                <div style="padding: 2rem;">
+                    <div class="mb-5">
+                        <h2 class="mb-3">¿Qué es el Modelo Ontológico?</h2>
+                        <p>
+                            El Modelo Ontológico para la Formación Judicial es una estructura semántica que representa formalmente el conocimiento jurídico y educativo, conectando cursos, competencias, conceptos y normativas en un sistema interrelacionado. Este modelo permite la navegación, consulta y análisis del conocimiento de forma inteligente.
+                        </p>
+                    </div>
+                    
+                    <div class="features-grid">
+                        <div class="feature-card fade-in delay-100">
+                            <div class="feature-icon feature-icon-primary">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <h3 class="feature-title">Estructura Multicapa</h3>
+                            <p class="feature-description">
+                                Organizado en tres capas interconectadas que representan diferentes niveles de abstracción y enfoques complementarios del conocimiento jurídico-formativo.
+                            </p>
+                        </div>
+                        
+                        <div class="feature-card fade-in delay-200">
+                            <div class="feature-icon feature-icon-secondary">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <h3 class="feature-title">Relaciones Semánticas</h3>
+                            <p class="feature-description">
+                                Define formalmente las conexiones entre entidades, permitiendo navegación contextual, consultas complejas y descubrimiento de patrones no evidentes.
+                            </p>
+                        </div>
+                        
+                        <div class="feature-card fade-in delay-300">
+                            <div class="feature-icon feature-icon-tertiary">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h3 class="feature-title">Formalización RDF/OWL</h3>
+                            <p class="feature-description">
+                                Implementado con estándares de la web semántica (RDF/OWL), permitiendo interoperabilidad, razonamiento automático y consultas SPARQL avanzadas.
+                            </p>
+                        </div>
+                        
+                        <div class="feature-card fade-in delay-400">
+                            <div class="feature-icon feature-icon-accent">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <h3 class="feature-title">Validación Experta</h3>
+                            <p class="feature-description">
+                                Integra un modelo Human-in-the-Loop que combina IA con validación experta para garantizar la calidad, precisión y pertinencia del conocimiento representado.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="graph-connectors mt-5">
+                        <div class="connector-line"></div>
+                        <div class="graph-connector">
+                            <div class="connector-icon" style="background-color: var(--primary);">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="connector-label">Datos Administrativos</div>
+                        </div>
+                        <div class="graph-connector">
+                            <div class="connector-icon" style="background-color: var(--secondary);">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div class="connector-label">Clasificación Temática</div>
+                        </div>
+                        <div class="graph-connector">
+                            <div class="connector-icon" style="background-color: var(--tertiary);">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="connector-label">Formalización Semántica</div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <div class="alert-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="alert-content">
+                            <div class="alert-title">Conocimiento como Activo Estratégico</div>
+                            <div class="alert-message">
+                                El Modelo Ontológico transforma el conocimiento judicial de un recurso implícito y disperso a un activo estratégico estructurado, consultable y evolutivo que potencia toda la formación judicial.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="layers" class="fade-in delay-200">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Capas de la Ontología</h2>
+                <p class="section-subtitle">El modelo ontológico está estructurado en tres capas interconectadas, cada una con propósitos específicos y características particulares.</p>
+            </div>
+            
+            <div class="ontology-layers">
+                <div class="layer-card layer-1 fade-in delay-100">
+                    <div class="layer-header">
+                        <div class="layer-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="layer-title-wrapper">
+                            <h3 class="layer-title">Clasificación Académico-Administrativa</h3>
+                            <div class="layer-subtitle">Capa 1: Gestión operativa y logística</div>
+                        </div>
+                    </div>
+                    <div class="layer-body">
+                        <div class="layer-description">
+                            Organiza la información logística, curricular, temporal y operativa de cada actividad formativa en una estructura formal y consultable.
+                        </div>
+                        
+                        <div class="badge badge-primary">Datos Estructurales</div>
+                        <div class="badge badge-primary">Información Administrativa</div>
+                        <div class="badge badge-primary">Gestión Curricular</div>
+                        
+                        <ul class="field-list">
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-fingerprint"></i> programa_formativo
+                                </div>
+                                <div class="field-description">Identificador del programa al que pertenece la actividad.</div>
+                                <a class="field-example-toggle" data-target="program-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="program-example">
+                                    <div class="field-example">"PFJYA2025"</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-tag"></i> codigo
+                                </div>
+                                <div class="field-description">Código único que identifica la actividad formativa.</div>
+                                <a class="field-example-toggle" data-target="code-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="code-example">
+                                    <div class="field-example">"PFJYA2025-FJ-ESP-001"</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-chalkboard"></i> actividad
+                                </div>
+                                <div class="field-description">Nombre o título de la actividad formativa.</div>
+                                <a class="field-example-toggle" data-target="activity-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="activity-example">
+                                    <div class="field-example">"PROGRAMA DE FORMACIÓN CONTINUA A JUECES Y JUEZAS DE PAZ QUE INTEGRAN EL SERVICIO NACIONAL DE FACILITADORES JUDICIALES"</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-bullseye"></i> objetivo
+                                </div>
+                                <div class="field-description">Propósito formativo de la actividad.</div>
+                                <a class="field-example-toggle" data-target="objective-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="objective-example">
+                                    <div class="field-example">"Fortalecer en las y los jueces de paz integrantes del Servicio Nacional de Facilitadores Judiciales, competencias en liderazgo, planificación, dirección estratégica y comunicación efectiva para una gestión eficiente de proyectos sociales judiciales de base comunitaria."</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-laptop"></i> modalidad y horario
+                                </div>
+                                <div class="field-description">Forma de entrega y estructura temporal.</div>
+                                <a class="field-example-toggle" data-target="modality-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="modality-example">
+                                    <div class="field-example">
+{
+"modalidad_general": "Virtual",
+"modalidad_detalle": [
+{
+  "tipo": "Virtual sincrónica",
+  "plataforma": "No especificada",
+  "comentario": "Sesiones mensuales los lunes, de 16:00 a 18:00 horas."
+}
+],
+"horario": {
+"tipo": "Recurrente mensual",
+"descripcion": "16:00 a 18:00 horas, un lunes al mes",
+"duracion_total_horas": 20
+}
+}</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-list-check"></i> evaluación
+                                </div>
+                                <div class="field-description">Métodos e instrumentos para evaluar el aprendizaje.</div>
+                                <a class="field-example-toggle" data-target="evaluation-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="evaluation-example">
+                                    <div class="field-example">
+{
+"instrumentos_evaluacion": [
+"Participación activa",
+"Productos de planificación social",
+"Autoevaluación de competencias"
+],
+"indicadores_medicion": [
+"Aplicación de herramientas de planificación",
+"Diseño de una propuesta de intervención comunitaria judicial"
+]
+}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="layer-card layer-2 fade-in delay-200">
+                    <div class="layer-header">
+                        <div class="layer-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <div class="layer-title-wrapper">
+                            <h3 class="layer-title">Clasificación Temático-Taxonómica</h3>
+                            <div class="layer-subtitle">Capa 2: Organización conceptual</div>
+                        </div>
+                    </div>
+                    <div class="layer-body">
+                        <div class="layer-description">
+                            Estructura jerárquicamente el contenido jurídico y pedagógico en niveles semánticos de abstracción creciente, proporcionando un mapa conceptual del conocimiento jurídico.
+                        </div>
+                        
+                        <div class="badge badge-secondary">Clasificación Jerárquica</div>
+                        <div class="badge badge-secondary">Taxonomía Temática</div>
+                        <div class="badge badge-secondary">Mapa Conceptual</div>
+                        
+                        <ul class="field-list">
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-compass"></i> area_principal
+                                </div>
+                                <div class="field-description">Área principal del derecho o temática abordada.</div>
+                                <a class="field-example-toggle" data-target="area-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="area-example">
+                                    <div class="field-example">"Métodos Alternativos de Solución de Conflictos (MASC)"</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-th-large"></i> areas_juridicas_principales
+                                </div>
+                                <div class="field-description">Conjunto de áreas jurídicas relevantes para la actividad.</div>
+                                <a class="field-example-toggle" data-target="areas-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="areas-example">
+                                    <div class="field-example">[
+"Gestión Judicial",
+"Mediación Comunitaria",
+"Competencias Comunicativas",
+"Facilitación Judicial",
+"Derecho Comunitario"
+]</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-th"></i> subareas_juridicas
+                                </div>
+                                <div class="field-description">Subáreas específicas dentro de las áreas principales.</div>
+                                <a class="field-example-toggle" data-target="subareas-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="subareas-example">
+                                    <div class="field-example">[
+"Gestión de Proyectos Sociales",
+"Dirección y Liderazgo en servicios judiciales",
+"Comunicación Asertiva y Persuasiva",
+"Planificación Estratégica Comunitaria",
+"Ética Judicial",
+"Facilitadores Judiciales",
+"Justicia Local y Participación Ciudadana"
+]</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-list-ul"></i> temas_especificos
+                                </div>
+                                <div class="field-description">Listado de temas concretos abordados en la actividad.</div>
+                                <a class="field-example-toggle" data-target="topics-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="topics-example">
+                                    <div class="field-example">[
+"Diagnóstico participativo en comunidades",
+"Ciclo de vida de proyectos judiciales sociales",
+"Liderazgo situacional y dirección judicial",
+"Técnicas de comunicación empática",
+"Gestión de conflictos y diálogo efectivo",
+"Indicadores de impacto en justicia comunitaria",
+"Ética y confianza en la función judicial local"
+]</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-award"></i> competencias_profesionales_asociadas
+                                </div>
+                                <div class="field-description">Capacidades profesionales que se desarrollan.</div>
+                                <a class="field-example-toggle" data-target="competencies-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="competencies-example">
+                                    <div class="field-example">[
+"Diseña y lidera proyectos de impacto social desde el ámbito judicial, con enfoque participativo y habilidades comunicativas efectivas.",
+"Aplica estrategias de facilitación judicial que promueven el acceso a justicia en comunidades rurales o vulnerables."
+]</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-balance-scale"></i> normativa_legal_aplicable
+                                </div>
+                                <div class="field-description">Marco legal relacionado con la actividad formativa.</div>
+                                <a class="field-example-toggle" data-target="normative-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="normative-example">
+                                    <div class="field-example">[
+"Constitución Política de la República de Guatemala",
+"Ley del Organismo Judicial",
+"Acuerdo 51-2014 (creación del Servicio Nacional de Facilitadores Judiciales)"
+]</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="layer-card layer-3 fade-in delay-300">
+                    <div class="layer-header">
+                        <div class="layer-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="layer-title-wrapper">
+                            <h3 class="layer-title">Taxonomía Global Enriquecida</h3>
+                            <div class="layer-subtitle">Capa 3: Semántica formal</div>
+                        </div>
+                    </div>
+                    <div class="layer-body">
+                        <div class="layer-description">
+                            Constituye el núcleo semántico que representa no solo la jerarquía temática, sino todo el espectro de relaciones conceptuales, normativas, doctrinarias y aplicativas.
+                        </div>
+                        
+                        <div class="badge badge-tertiary">Ontología Formal</div>
+                        <div class="badge badge-tertiary">Relaciones Semánticas</div>
+                        <div class="badge badge-tertiary">Conocimiento Jurídico Estructurado</div>
+                        
+                        <ul class="field-list">
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-id-card"></i> ID_Nodo_Tematico
+                                </div>
+                                <div class="field-description">Identificador único del concepto dentro del grafo.</div>
+                                <a class="field-example-toggle" data-target="node-id-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="node-id-example">
+                                    <div class="field-example">"PFJYA2025-FJ-ESP-001-C001"</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-lightbulb"></i> concepto
+                                </div>
+                                <div class="field-description">Nombre del concepto jurídico representado.</div>
+                                <a class="field-example-toggle" data-target="concept-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="concept-example">
+                                    <div class="field-example">"Introducción a la Gestión de Proyectos Sociales Judiciales"</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-align-left"></i> descripcion_conceptual
+                                </div>
+                                <div class="field-description">Definición formalizada del concepto.</div>
+                                <a class="field-example-toggle" data-target="description-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="description-example">
+                                    <div class="field-example">"Conceptualización de la gestión de proyectos sociales, con énfasis en su aplicación para la mejora del acceso a la justicia y la resolución de conflictos a nivel comunitario, bajo la dirección de facilitadores judiciales."</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-gavel"></i> referencias_legales
+                                </div>
+                                <div class="field-description">Fuentes normativas que fundamentan el concepto.</div>
+                                <a class="field-example-toggle" data-target="legal-refs-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="legal-refs-example">
+                                    <div class="field-example">[
+{
+"fuente": "Ley del Organismo Judicial",
+"articulo": "Artículos relativos a la administración de justicia y modernización",
+"descripcion": "Base para la implementación de programas que mejoren el servicio de justicia."
+},
+{
+"fuente": "Acuerdo 51-2014 CSJ",
+"articulo": "Artículo 1 y 3",
+"descripcion": "Creación y objetivos del Servicio Nacional de Facilitadores Judiciales."
+}
+]</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-project-diagram"></i> relaciones_semanticas
+                                </div>
+                                <div class="field-description">Vínculos con otros conceptos y su naturaleza.</div>
+                                <a class="field-example-toggle" data-target="relations-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="relations-example">
+                                    <div class="field-example">[
+{
+"tipo": "esParteDe",
+"concepto_relacionado_ID": "N/A",
+"descripcion_relacion": "La gestión de proyectos sociales es un componente de la administración judicial moderna."
+},
+{
+"tipo": "requiereDe",
+"concepto_relacionado_ID": "PFJYA2025-FJ-ESP-001-C002",
+"descripcion_relacion": "La gestión efectiva de proyectos sociales requiere habilidades de liderazgo."
+},
+{
+"tipo": "seComplementaCon",
+"concepto_relacionado_ID": "PFJYA2025-FJ-ESP-001-C006",
+"descripcion_relacion": "Se articula con la planificación estratégica para alinear proyectos con objetivos."
+}
+]</div>
+                                </div>
+                            </li>
+                            
+                            <li class="field-item">
+                                <div class="field-name">
+                                    <i class="fas fa-hands-helping"></i> aplicaciones_practicas
+                                </div>
+                                <div class="field-description">Casos de uso y aplicaciones concretas del concepto.</div>
+                                <a class="field-example-toggle" data-target="applications-example">
+                                    <i class="fas fa-chevron-down"></i> Ver ejemplo
+                                </a>
+                                <div class="field-example-content" id="applications-example">
+                                    <div class="field-example">[
+"Diseño de un proyecto piloto de facilitación judicial en una nueva comunidad.",
+"Elaboración de un plan de capacitación continua para facilitadores judiciales.",
+"Implementación de un sistema de monitoreo y evaluación para medir el impacto."
+]</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-6">
+                <div class="alert-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Interconexión de las Capas</div>
+                    <div class="alert-message">
+                        Las tres capas no funcionan de manera aislada, sino que se integran fluidamente para crear un modelo completo. Las actividades formativas (Capa 1) desarrollan competencias (Capa 2) que se basan en conceptos jurídicos formalizados (Capa 3), creando un ecosistema de conocimiento interconectado.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="schema-visualization mt-5">
+                <div class="schema-table">
+                    <div class="schema-table-header">
+                        <div class="schema-table-title">
+                            <div class="schema-table-icon" style="background-color: var(--tertiary);">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            Estructura de Tablas: Modelo Ontológico
+                        </div>
+                    </div>
+                    
+                    <div class="schema-columns">
+                        <div class="schema-column-header">Tabla</div>
+                        <div class="schema-column-header">Propósito</div>
+                        <div class="schema-column-header">Campos Principales</div>
+                        
+                        <div class="schema-column">conceptos_juridicos</div>
+                        <div class="schema-column">Entidades conceptuales</div>
+                        <div class="schema-column">id, codigo, nombre, descripcion, tema_id, subtema_id, nivel_complejidad</div>
+                        
+                        <div class="schema-column">referencias_legales</div>
+                        <div class="schema-column">Marco normativo</div>
+                        <div class="schema-column">id, concepto_id, fuente, articulo, descripcion</div>
+                        
+                        <div class="schema-column">jurisprudencia</div>
+                        <div class="schema-column">Precedentes judiciales</div>
+                        <div class="schema-column">id, concepto_id, organo, expediente, fecha, extracto</div>
+                        
+                        <div class="schema-column">doctrina</div>
+                        <div class="schema-column">Referencias doctrinarias</div>
+                        <div class="schema-column">id, concepto_id, autor, obra, concepto_clave</div>
+                        
+                        <div class="schema-column">relaciones_semanticas</div>
+                        <div class="schema-column">Conexiones entre conceptos</div>
+                        <div class="schema-column">id, concepto_origen_id, concepto_destino_id, tipo_relacion, descripcion</div>
+                        
+                        <div class="schema-column">aplicaciones_practicas</div>
+                        <div class="schema-column">Casos de uso</div>
+                        <div class="schema-column">id, concepto_id, descripcion</div>
+                        
+                        <div class="schema-column">validaciones</div>
+                        <div class="schema-column">Registro de validaciones</div>
+                        <div class="schema-column">id, concepto_id, experto_id, fecha, comentarios, estado</div>
+                    </div>
+                    
+                    <div class="schema-relations">
+                        <div class="schema-relations-title">Tipos de Relaciones Semánticas:</div>
+                        <div class="schema-relation">
+                            <i class="fas fa-sitemap"></i> <strong>Estructurales:</strong> esParteDe, tieneComponente, esTipoDe, tieneEjemplo...
+                        </div>
+                        <div class="schema-relation">
+                            <i class="fas fa-exchange-alt"></i> <strong>Funcionales:</strong> requiereDe, esRequeridoPor, seAplicaEn, seUtilizaPara...
+                        </div>
+                        <div class="schema-relation">
+                            <i class="fas fa-sync-alt"></i> <strong>Comparativas:</strong> seDiferenciaDe, esOpuestoA, seComplementaCon, esAnálogoA...
+                        </div>
+                        <div class="schema-relation">
+                            <i class="fas fa-project-diagram"></i> <strong>Causales:</strong> causaDe, provocadoPor, influenciaA, derivaDe...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="semantic-connections" class="fade-in delay-400">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Conexiones Semánticas</h2>
+                <p class="section-subtitle">Visualización de las relaciones entre los diferentes tipos de nodos en el modelo ontológico y su representación como grafo de conocimiento.</p>
+            </div>
+            
+            <div class="graph-container">
+                <div class="graph-controls">
+                    <button class="graph-btn active" data-layout="cose" id="layout-cose">
+                        <i class="fas fa-project-diagram"></i> Orgánico
+                    </button>
+                    <button class="graph-btn" data-layout="breadthfirst" id="layout-breadthfirst">
+                        <i class="fas fa-sitemap"></i> Jerárquico
+                    </button>
+                    <button class="graph-btn" data-layout="concentric" id="layout-concentric">
+                        <i class="fas fa-bullseye"></i> Concéntrico
+                    </button>
+                    <button class="graph-btn" data-filter="all" id="filter-all">
+                        <i class="fas fa-globe"></i> Todo
+                    </button>
+                    <button class="graph-btn" data-filter="course" id="filter-course">
+                        <i class="fas fa-graduation-cap"></i> Actividades
+                    </button>
+                    <button class="graph-btn" data-filter="concept" id="filter-concept">
+                        <i class="fas fa-lightbulb"></i> Conceptos
+                    </button>
+                </div>
+                <div id="cy" class="graph-display"></div>
+                
+                <div class="graph-legend">
+                    <div class="legend-title">Leyenda</div>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #f59e0b;"></div>
+                            <span>Actividades Formativas</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #3b82f6;"></div>
+                            <span>Competencias</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #10b981;"></div>
+                            <span>Conceptos Jurídicos</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ef4444;"></div>
+                            <span>Normativa</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features-grid mt-5">
+                <div class="feature-card fade-in delay-100">
+                    <div class="feature-icon feature-icon-primary">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="feature-title">Navegación Contextual</h3>
+                    <p class="feature-description">
+                        El grafo semántico permite navegar dinámicamente entre conceptos relacionados, descubriendo conexiones no evidentes y explorando el conocimiento de forma no lineal.
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in delay-200">
+                    <div class="feature-icon feature-icon-secondary">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="feature-title">Consultas Complejas</h3>
+                    <p class="feature-description">
+                        Mediante consultas SPARQL, el modelo permite preguntas sofisticadas como: "¿Qué conceptos jurídicos sin cobertura formativa tienen alta relevancia en la práctica judicial?"
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in delay-300">
+                    <div class="feature-icon feature-icon-tertiary">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3 class="feature-title">Rutas Formativas</h3>
+                    <p class="feature-description">
+                        Identificación automática de secuencias óptimas de actividades formativas para desarrollar competencias específicas basadas en requisitos y dependencias conceptuales.
+                    </p>
+                </div>
+                
+                <div class="feature-card fade-in delay-400">
+                    <div class="feature-icon feature-icon-accent">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h3 class="feature-title">Detección de Brechas</h3>
+                    <p class="feature-description">
+                        Análisis de áreas temáticas, competencias o normativas subrepresentadas en el programa formativo, permitiendo una planificación curricular estratégica.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="code-container mt-6">
+                <div class="code-header">
+                    <div class="code-title">
+                        <i class="fas fa-code"></i> Ejemplo de Consulta SPARQL para Análisis de Cobertura Formativa
+                    </div>
+                    <div class="code-actions">
+                        <button class="code-action" id="copy-sparql">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+                <div class="code-content">
+                    <pre><code class="language-sparql">PREFIX oj: &lt;http://www.organismojudicial.gob.gt/ontologia/formacion#&gt;
+PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
+
+# Consulta: "Encontrar conceptos jurídicos importantes que no están 
+# adecuadamente cubiertos en las actividades formativas actuales"
+
+SELECT ?concepto ?nombre_concepto ?nivel_importancia ?num_actividades
+WHERE {
+# Obtener conceptos con nivel de importancia alto
+?concepto rdf:type oj:ConceptoJuridico ;
+        oj:tieneNombre ?nombre_concepto ;
+        oj:nivelImportanciaPractica ?nivel_importancia .
+
+FILTER (?nivel_importancia >= 8)  # Importancia alta (escala 1-10)
+
+# Contar actividades formativas que cubren el concepto
+{
+SELECT ?concepto (COUNT(?actividad) AS ?num_actividades)
+WHERE {
+  ?actividad rdf:type oj:ActividadFormativa ;
+            oj:incluyeConcepto ?concepto .
+}
+GROUP BY ?concepto
+}
+
+# Filtrar conceptos con baja cobertura formativa
+FILTER (?num_actividades < 2)
+}
+ORDER BY DESC(?nivel_importancia) ?nombre_concepto</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="sql-integration" class="fade-in delay-500">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Integración con SQL</h2>
+                <p class="section-subtitle">Transformación de la estructura ontológica en un sistema relacional para implementación en bases de datos SQL.</p>
+            </div>
+            
+            <div class="conversion-section">
+                <h3 class="mb-4">Convirtiendo JSON a Estructura de Tablas</h3>
+                <p class="mb-5">
+                    Los datos JSON de cada capa de la ontología pueden convertirse en estructuras de tablas relacionales para su implementación en sistemas de gestión de bases de datos, facilitando consultas SQL eficientes y la integración con sistemas existentes.
+                </p>
+                
+                <div class="conversion-steps">
+                    <div class="conversion-step fade-in delay-100">
+                        <div class="step-number">1</div>
+                        <h4 class="step-title">Identificar Entidades Principales</h4>
+                        <p>
+                            A partir de los JSON, se identifican las entidades principales que se convertirán en tablas. Para la ontología, las entidades clave son: Actividades Formativas, Competencias, Áreas Temáticas (a varios niveles), Conceptos Jurídicos, Normativa, y Relaciones Semánticas.
+                        </p>
+                    </div>
+                    
+                    <div class="conversion-step fade-in delay-200">
+                        <div class="step-number">2</div>
+                        <h4 class="step-title">Normalizar la Estructura</h4>
+                        <p>
+                            Los arrays en JSON se convierten en tablas relacionales separadas. Por ejemplo, la propiedad "areas_juridicas_principales" se convertiría en una tabla relacionada con la tabla de actividades formativas mediante una tabla de unión.
+                        </p>
+                    </div>
+                    
+                    <div class="conversion-step fade-in delay-300">
+                        <div class="step-number">3</div>
+                        <h4 class="step-title">Crear Estructura de Tablas</h4>
+                        <div class="code-container mt-3 mb-3">
+                            <div class="code-header">
+                                <div class="code-title">
+                                    <i class="fas fa-database"></i> SQL para Creación de Tablas
+                                </div>
+                            </div>
+                            <div class="code-content">
+                                <pre><code class="language-sql">-- Tabla de Áreas Principales (Nivel 1)
+CREATE TABLE areas_principales (
+id SERIAL PRIMARY KEY,
+nombre VARCHAR(255) NOT NULL,
+descripcion TEXT,
+slug VARCHAR(100) UNIQUE,
+fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+fecha_modificacion TIMESTAMP
+);
+
+-- Tabla de Áreas Jurídicas (Nivel 2)
+CREATE TABLE areas_juridicas (
+id SERIAL PRIMARY KEY,
+area_principal_id INTEGER REFERENCES areas_principales(id),
+nombre VARCHAR(255) NOT NULL,
+descripcion TEXT,
+slug VARCHAR(100) UNIQUE,
+fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+fecha_modificacion TIMESTAMP
+);
+
+-- Tabla de Conceptos Jurídicos
+CREATE TABLE conceptos_juridicos (
+id SERIAL PRIMARY KEY,
+codigo VARCHAR(50) UNIQUE,
+tema_general_id INTEGER REFERENCES areas_principales(id),
+subtema_id INTEGER REFERENCES areas_juridicas(id),
+concepto VARCHAR(255) NOT NULL,
+descripcion_conceptual TEXT,
+nivel_complejidad_conceptual VARCHAR(50),
+fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+fecha_modificacion TIMESTAMP,
+fecha_ultima_revision TIMESTAMP,
+experto_validador_id INTEGER
+);
+
+-- Tabla de Relaciones Semánticas
+CREATE TABLE relaciones_semanticas (
+id SERIAL PRIMARY KEY,
+concepto_origen_id INTEGER REFERENCES conceptos_juridicos(id),
+concepto_destino_id INTEGER REFERENCES conceptos_juridicos(id),
+tipo_relacion VARCHAR(50) NOT NULL,
+descripcion_relacion TEXT,
+fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Referencias Legales
+CREATE TABLE referencias_legales (
+id SERIAL PRIMARY KEY,
+concepto_id INTEGER REFERENCES conceptos_juridicos(id),
+fuente VARCHAR(255) NOT NULL,
+articulo VARCHAR(100),
+descripcion TEXT,
+fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="conversion-step fade-in delay-400">
+                        <div class="step-number">4</div>
+                        <h4 class="step-title">Convertir Datos JSON a Sentencias INSERT</h4>
+                        <p>
+                            Una vez creadas las tablas, los datos JSON se transforman en sentencias INSERT para poblar la base de datos. A continuación se muestra un ejemplo de conversión para un concepto jurídico:
+                        </p>
+                        <div class="code-container mt-3 mb-3">
+                            <div class="code-content">
+                                <pre><code class="language-sql">-- Insertar un concepto jurídico
+INSERT INTO conceptos_juridicos 
+(codigo, tema_general_id, subtema_id, concepto, descripcion_conceptual, nivel_complejidad_conceptual)
+VALUES 
+('PFJYA2025-FJ-ESP-001-C001', 
+(SELECT id FROM areas_principales WHERE nombre = 'Gestión Judicial Aplicada'),
+(SELECT id FROM areas_juridicas WHERE nombre = 'Gestión de Proyectos Sociales en el Ámbito Judicial Comunitario'),
+'Introducción a la Gestión de Proyectos Sociales Judiciales',
+'Conceptualización de la gestión de proyectos sociales, con énfasis en su aplicación para la mejora del acceso a la justicia y la resolución de conflictos a nivel comunitario...',
+'Introductorio-Intermedio');
+
+-- Insertar relaciones semánticas
+INSERT INTO relaciones_semanticas
+(concepto_origen_id, concepto_destino_id, tipo_relacion, descripcion_relacion)
+VALUES
+((SELECT id FROM conceptos_juridicos WHERE codigo = 'PFJYA2025-FJ-ESP-001-C001'),
+(SELECT id FROM conceptos_juridicos WHERE codigo = 'PFJYA2025-FJ-ESP-001-C002'),
+'requiereDe',
+'La gestión efectiva de proyectos sociales requiere habilidades de liderazgo.');</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="conversion-step fade-in delay-500">
+                        <div class="step-number">5</div>
+                        <h4 class="step-title">Crear Vistas para Reconstruir Estructura Original</h4>
+                        <p>
+                            Para mantener la visión integral de los conceptos, se pueden crear vistas que reconstruyan la estructura original como se ve en el JSON:
+                        </p>
+                        <div class="code-container mt-3 mb-3">
+                            <div class="code-content">
+                                <pre><code class="language-sql">CREATE VIEW vista_conceptos_enriquecidos AS
+SELECT 
+c.id,
+c.codigo,
+c.concepto,
+c.descripcion_conceptual,
+c.nivel_complejidad_conceptual,
+(
+    SELECT json_agg(json_build_object(
+        'fuente', r.fuente,
+        'articulo', r.articulo,
+        'descripcion', r.descripcion
+    ))
+    FROM referencias_legales r
+    WHERE r.concepto_id = c.id
+) AS referencias_legales,
+(
+    SELECT json_agg(json_build_object(
+        'tipo', rs.tipo_relacion,
+        'concepto_relacionado_ID', c2.codigo,
+        'descripcion_relacion', rs.descripcion_relacion
+    ))
+    FROM relaciones_semanticas rs
+    JOIN conceptos_juridicos c2 ON rs.concepto_destino_id = c2.id
+    WHERE rs.concepto_origen_id = c.id
+) AS relaciones_semanticas
+FROM 
+conceptos_juridicos c;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mt-6">
+                <div class="alert-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="alert-content">
+                    <div class="alert-title">Beneficios de la Transformación a SQL</div>
+                    <div class="alert-message">
+                        La transformación de la ontología a un esquema SQL permite integrarla con sistemas existentes, facilita consultas eficientes, posibilita la creación de interfaces CRUD, y mantiene la integridad referencial de los datos. Al mismo tiempo, se puede mantener una exportación RDF para análisis semántico avanzado, combinando lo mejor de ambos mundos.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+            
+            <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Estructura de Datos</h2>
+                <p class="section-subtitle">Cada capa de la ontología implementa estructuras JSON específicas que capturan la información relevante y establecen las relaciones semánticas.</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="capa1">Capa 1: Académico-Administrativa</div>
+                <div class="tab" data-tab="capa2">Capa 2: Temático-Taxonómica</div>
+                <div class="tab" data-tab="capa3">Capa 3: Ontológica</div>
+            </div>
+            
+            <div id="capa1-content" class="tab-content active">
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <i class="fas fa-file-code"></i> Ejemplo: Actividad Formativa (Capa 1)
+                        </div>
+                        <div class="code-actions">
+                            <button class="code-action" id="copy-capa1">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code class="language-json" id="code-capa1">{
+"programa_formativo": "PFJYA2025",
+"eje_formativo": "Funcionarios Judiciales", 
+"area_organizativa_pfjya": "Especialización Judicial",
+"tipo_formacion": "Programa de Formación Continua", 
+"codigo": "PFJYA2025-FJ-ESP-001",
+"actividad": "PROGRAMA DE FORMACIÓN CONTINUA A JUECES Y JUEZAS DE PAZ QUE INTEGRAN EL SERVICIO NACIONAL DE FACILITADORES JUDICIALES",
+"objetivo": "Fortalecer en las y los jueces de paz integrantes del Servicio Nacional de Facilitadores Judiciales, competencias en liderazgo, planificación, dirección estratégica y comunicación efectiva para una gestión eficiente de proyectos sociales judiciales de base comunitaria.",
+"fuente": "Oficio DMASC No. 535-2024 EPMV/eshc/mm, Dirección de Métodos Alternativos de Solución de Conflictos, 9 de octubre de 2024.",
+"modalidad_general": "Virtual",
+"modalidad_detalle": [
+{
+  "tipo": "Virtual sincrónica",
+  "plataforma": "No especificada",
+  "comentario": "Sesiones mensuales los lunes, de 16:00 a 18:00 horas, entre febrero y noviembre 2025."
+}
+],
+"herramientas_utilizadas": [
+"Plataforma virtual institucional (por definir)",
+"Material de apoyo digital (guías, lecturas, rúbricas)"
+],
+"comentarios_modalidad": "Enfoque modular y participativo con facilitación sincrónica mensual.",
+"horario": {
+"tipo": "Recurrente mensual",
+"descripcion": "16:00 a 18:00 horas, un lunes al mes de febrero a noviembre 2025",
+"duracion_total_horas": 20
+},
+"bimestre_o_rango_bimestre": "Primer al Quinto Bimestre",
+"estado_final": "Activo",
+"nivel_dificultad": "Intermedio",
+"requisitos_previos": [
+"Ser Juez o Jueza de Paz integrante del Servicio Nacional de Facilitadores Judiciales"
+],
+"instrumentos_evaluacion": [
+"Participación activa",
+"Productos de planificación social",
+"Autoevaluación de competencias"
+],
+"indicadores_medicion": [
+"Aplicación de herramientas de planificación",
+"Diseño de una propuesta de intervención comunitaria judicial",
+"Mejora en habilidades de comunicación efectiva"
+]
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="schema-visualization">
+                    <div class="schema-table">
+                        <div class="schema-table-header">
+                            <div class="schema-table-title">
+                                <div class="schema-table-icon" style="background-color: var(--primary);">
+                                    <i class="fas fa-table"></i>
+                                </div>
+                                Estructura de Tabla: Actividades Formativas
+                            </div>
+                        </div>
+                        
+                        <div class="schema-columns">
+                            <div class="schema-column-header">Campo</div>
+                            <div class="schema-column-header">Tipo</div>
+                            <div class="schema-column-header">Descripción</div>
+                            
+                            <div class="schema-column">id</div>
+                            <div class="schema-column">INT PRIMARY KEY</div>
+                            <div class="schema-column">Identificador único autoincrementable</div>
+                            
+                            <div class="schema-column">codigo</div>
+                            <div class="schema-column">VARCHAR(50)</div>
+                            <div class="schema-column">Código formal de la actividad (e.j. PFJYA2025-FJ-ESP-001)</div>
+                            
+                            <div class="schema-column">programa_id</div>
+                            <div class="schema-column">INT FOREIGN KEY</div>
+                            <div class="schema-column">Referencia al programa formativo (PFJYA2025)</div>
+                            
+                            <div class="schema-column">actividad</div>
+                            <div class="schema-column">VARCHAR(255)</div>
+                            <div class="schema-column">Título completo de la actividad formativa</div>
+                            
+                            <div class="schema-column">objetivo</div>
+                            <div class="schema-column">TEXT</div>
+                            <div class="schema-column">Descripción del objetivo formativo</div>
+                            
+                            <div class="schema-column">modalidad_general_id</div>
+                            <div class="schema-column">INT FOREIGN KEY</div>
+                            <div class="schema-column">Referencia a la modalidad (Virtual, Presencial, Híbrida)</div>
+                            
+                            <div class="schema-column">nivel_dificultad_id</div>
+                            <div class="schema-column">INT FOREIGN KEY</div>
+                            <div class="schema-column">Referencia al nivel de dificultad</div>
+                            
+                            <div class="schema-column">bimestre</div>
+                            <div class="schema-column">VARCHAR(50)</div>
+                            <div class="schema-column">Bimestre o rango de realización</div>
+                            
+                            <div class="schema-column">duracion_horas</div>
+                            <div class="schema-column">INT</div>
+                            <div class="schema-column">Duración total en horas de la actividad</div>
+                            
+                            <div class="schema-column">estado_id</div>
+                            <div class="schema-column">INT FOREIGN KEY</div>
+                            <div class="schema-column">Estado actual de la actividad (Activo, Cancelado, etc.)</div>
+                        </div>
+                        
+                        <div class="schema-relations">
+                            <div class="schema-relations-title">Relaciones con otras tablas:</div>
+                            <div class="schema-relation">
+                                <i class="fas fa-link"></i> <strong>programa_id</strong> → Tabla de Programas Formativos
+                            </div>
+                            <div class="schema-relation">
+                                <i class="fas fa-link"></i> <strong>modalidad_general_id</strong> → Tabla de Modalidades
+                            </div>
+                            <div class="schema-relation">
+                                <i class="fas fa-link"></i> <strong>nivel_dificultad_id</strong> → Tabla de Niveles de Dificultad
+                            </div>
+                            <div class="schema-relation">
+                                <i class="fas fa-link"></i> <strong>estado_id</strong> → Tabla de Estados
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="capa2-content" class="tab-content">
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <i class="fas fa-file-code"></i> Ejemplo: Clasificación Temático-Taxonómica (Capa 2)
+                        </div>
+                        <div class="code-actions">
+                            <button class="code-action" id="copy-capa2">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code class="language-json" id="code-capa2">{
+"eje_formativo": "Funcionarios Judiciales",
+"area_principal": "Métodos Alternativos de Solución de Conflictos (MASC)",
+"areas_juridicas_principales": [
+"Gestión Judicial",
+"Mediación Comunitaria",
+"Competencias Comunicativas",
+"Facilitación Judicial",
+"Derecho Comunitario"
+],
+"subareas_juridicas": [
+"Gestión de Proyectos Sociales",
+"Dirección y Liderazgo en servicios judiciales",
+"Comunicación Asertiva y Persuasiva",
+"Planificación Estratégica Comunitaria",
+"Ética Judicial",
+"Facilitadores Judiciales",
+"Justicia Local y Participación Ciudadana"
+],
+"temas_especificos": [
+"Diagnóstico participativo en comunidades",
+"Ciclo de vida de proyectos judiciales sociales",
+"Liderazgo situacional y dirección judicial",
+"Técnicas de comunicación empática",
+"Gestión de conflictos y diálogo efectivo",
+"Indicadores de impacto en justicia comunitaria",
+"Ética y confianza en la función judicial local",
+"Gestión del riesgo social en territorio",
+"Técnicas orales para la persuasión comunitaria"
+],
+"competencias_profesionales_asociadas": [
+"Diseña y lidera proyectos de impacto social desde el ámbito judicial, con enfoque participativo y habilidades comunicativas efectivas.",
+"Aplica estrategias de facilitación judicial que promueven el acceso a justicia en comunidades rurales o vulnerables.",
+"Promueve relaciones interinstitucionales y comunitarias con liderazgo ético y enfoque en derechos humanos."
+],
+"normativa_legal_aplicable": [
+"Constitución Política de la República de Guatemala",
+"Ley del Organismo Judicial",
+"Acuerdo 51-2014 (creación del Servicio Nacional de Facilitadores Judiciales)",
+"Ley de Consejos de Desarrollo Urbano y Rural",
+"Código de Ética Judicial"
+],
+"poblacion_objetivo": [
+"Jueces y Juezas de Paz integrantes del Servicio Nacional de Facilitadores Judiciales"
+]
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div class="schema-visualization">
+                    <div class="tree-demo">
+                        <div class="tree-node" style="background-color: rgba(14, 165, 233, 0.1); color: var(--secondary); width: 300px;">
+                            <strong>Área Principal</strong>
+                            <div>Métodos Alternativos de Solución de Conflictos</div>
+                        </div>
+                        
+                        <div class="tree-level">
+                            <div class="tree-node" style="background-color: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.2);">
+                                <strong>Área Jurídica</strong>
+                                <div>Gestión Judicial</div>
+                                <div class="vertical-connector"></div>
+                            </div>
+                            
+                            <div class="tree-node" style="background-color: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.2);">
+                                <strong>Área Jurídica</strong>
+                                <div>Mediación Comunitaria</div>
+                                <div class="vertical-connector"></div>
+                            </div>
+                            
+                            <div class="tree-node" style="background-color: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.2);">
+                                <strong>Área Jurídica</strong>
+                                <div>Competencias Comunicativas</div>
+                                <div class="vertical-connector"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="tree-level">
+                            <div class="tree-node" style="background-color: rgba(14, 165, 233, 0.02); border: 1px solid rgba(14, 165, 233, 0.1);">
+                                <strong>Subárea</strong>
+                                <div>Gestión de Proyectos Sociales</div>
+                                <div class="vertical-connector"></div>
+                            </div>
+                            
+                            <div class="tree-node" style="background-color: rgba(14, 165, 233, 0.02); border: 1px solid rgba(14, 165, 233, 0.1);">
+                                <strong>Subárea</strong>
+                                <div>Comunicación Asertiva</div>
+                                <div class="vertical-connector"></div>
+                            </div>
+                            
+                            <div class="tree-node" style="background-color: rgba(14, 165, 233, 0.02); border: 1px solid rgba(14, 165, 233, 0.1);">
+                                <strong>Subárea</strong>
+                                <div>Facilitadores Judiciales</div>
+                                <div class="vertical-connector"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="tree-level">
+                            <div class="tree-node" style="font-size: 0.875rem; background-color: white; border: 1px solid var(--border);">
+                                <strong>Tema Específico</strong>
+                                <div>Ciclo de vida de proyectos judiciales</div>
+                            </div>
+                            
+                            <div class="tree-node" style="font-size: 0.875rem; background-color: white; border: 1px solid var(--border);">
+                                <strong>Tema Específico</strong>
+                                <div>Técnicas de comunicación empática</div>
+                            </div>
+                            
+                            <div class="tree-node" style="font-size: 0.875rem; background-color: white; border: 1px solid var(--border);">
+                                <strong>Tema Específico</strong>
+                                <div>Gestión de conflictos y diálogo</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="schema-table">
+                        <div class="schema-table-header">
+                            <div class="schema-table-title">
+                                <div class="schema-table-icon" style="background-color: var(--secondary);">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                Estructura de Tablas: Sistema de Etiquetado
+                            </div>
+                        </div>
+                        
+                        <div class="schema-columns">
+                            <div class="schema-column-header">Tabla</div>
+                            <div class="schema-column-header">Propósito</div>
+                            <div class="schema-column-header">Campos Principales</div>
+                            
+                            <div class="schema-column">areas_principales</div>
+                            <div class="schema-column">Nivel 1 de clasificación</div>
+                            <div class="schema-column">id, nombre, descripcion, slug</div>
+                            
+                            <div class="schema-column">areas_juridicas</div>
+                            <div class="schema-column">Nivel 2 de clasificación</div>
+                            <div class="schema-column">id, nombre, area_principal_id, descripcion, slug</div>
+                            
+                            <div class="schema-column">subareas_juridicas</div>
+                            <div class="schema-column">Nivel 3 de clasificación</div>
+                            <div class="schema-column">id, nombre, area_juridica_id, descripcion, slug</div>
+                            
+                            <div class="schema-column">temas_especificos</div>
+                            <div class="schema-column">Nivel 4 de clasificación</div>
+                            <div class="schema-column">id, nombre, subarea_id, descripcion, slug</div>
+                            
+                            <div class="schema-column">competencias</div>
+                            <div class="schema-column">Competencias profesionales</div>
+                            <div class="schema-column">id, descripcion, codigo, nivel_bloom, tipo</div>
+                            
+                            <div class="schema-column">normativa_legal</div>
+                            <div class="schema-column">Referencias legales</div>
+                            <div class="schema-column">id, nombre, tipo, numero, anio, descripcion</div>
+                            
+                            <div class="schema-column">actividad_competencia</div>
+                            <div class="schema-column">Tabla de relación</div>
+                            <div class="schema-column">actividad_id, competencia_id</div>
+                            
+                            <div class="schema-column">actividad_area</div>
+                            <div class="schema-column">Tabla de relación</div>
+                            <div class="schema-column">actividad_id, area_id, nivel (1-4), peso</div>
+                        </div>
+                        
+                        <div class="schema-relations">
+                            <div class="schema-relations-title">Jerarquía de etiquetas:</div>
+                            <div class="schema-relation">
+                                <i class="fas fa-level-down-alt"></i> <strong>Nivel 1:</strong> Área Principal (MASC, Derecho Penal, Derecho Civil...)
+                            </div>
+                            <div class="schema-relation">
+                                <i class="fas fa-level-down-alt"></i> <strong>Nivel 2:</strong> Área Jurídica (Gestión Judicial, Mediación Comunitaria...)
+                            </div>
+                            <div class="schema-relation">
+                                <i class="fas fa-level-down-alt"></i> <strong>Nivel 3:</strong> Subárea Jurídica (Gestión de Proyectos Sociales...)
+                            </div>
+                            <div class="schema-relation">
+                                <i class="fas fa-level-down-alt"></i> <strong>Nivel 4:</strong> Tema Específico (Diagnóstico participativo...)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="capa3-content" class="tab-content">
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <i class="fas fa-file-code"></i> Ejemplo: Concepto Jurídico Ontológico (Capa 3)
+                        </div>
+                        <div class="code-actions">
+                            <button class="code-action" id="copy-capa3">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-content">
+                        <pre><code class="language-json" id="code-capa3">{
+"codigo_actividad_padre": "PFJYA2025-FJ-ESP-001",
+"ID_Nodo_Tematico": "PFJYA2025-FJ-ESP-001-C001",
+"tema_general": "Gestión Judicial Aplicada",
+"subtema": "Gestión de Proyectos Sociales en el Ámbito Judicial Comunitario",
+"concepto": "Introducción a la Gestión de Proyectos Sociales Judiciales",
+"descripcion_conceptual": "Conceptualización de la gestión de proyectos sociales, con énfasis en su aplicación para la mejora del acceso a la justicia y la resolución de conflictos a nivel comunitario, bajo la dirección de facilitadores judiciales.",
+"referencias_legales": [
+{
+  "fuente": "Ley del Organismo Judicial",
+  "articulo": "Artículos relativos a la administración de justicia y modernización (por ejemplo, Art. 54 funciones generales de la Presidencia, Art. 74, 75, 76, 95, 98, 100)",
+  "descripcion": "Base para la implementación de programas que mejoren el servicio de justicia."
+},
+{
+  "fuente": "Acuerdo 51-2014 CSJ",
+  "articulo": "Artículo 1 y 3",
+  "descripcion": "Creación y objetivos del Servicio Nacional de Facilitadores Judiciales, que incluye la promoción de proyectos para el acceso a la justicia."
+},
+{
+  "fuente": "Plan Estratégico Institucional del Organismo Judicial",
+  "seccion": "Ejes de modernización y acceso a la justicia",
+  "descripcion": "Marco para el desarrollo de proyectos que fortalezcan el sistema judicial y su relación con la comunidad."
+}
+],
+"jurisprudencia_relevante_guatemala": [
+{
+  "organo": "Corte de Constitucionalidad",
+  "expediente": "N/A (conceptual, buscar jurisprudencia sobre acceso a justicia y MASC)",
+  "fecha": "N/A",
+  "extracto": "Principios constitucionales que respaldan la implementación de mecanismos alternativos y programas de acceso a la justicia."
+}
+],
+"doctrina_aplicable": [
+{
+  "autor": "Instituto Latinoamericano de Planificación Económica y Social (ILPES/CEPAL)",
+  "obra": "Manual de Planificación, Seguimiento y Evaluación de Proyectos Sociales",
+  "concepto_clave": "Ciclo de vida de proyectos, marco lógico, indicadores de gestión."
+},
+{
+  "autor": "Project Management Institute (PMI)",
+  "obra": "Guía de los Fundamentos para la Dirección de Proyectos (Guía del PMBOK)",
+  "concepto_clave": "Áreas de conocimiento y procesos estándar en la dirección de proyectos, adaptables al contexto social."
+}
+],
+"aplicaciones_practicas": [
+"Diseño de un proyecto piloto de facilitación judicial en una nueva comunidad.",
+"Elaboración de un plan de capacitación continua para facilitadores judiciales basado en necesidades detectadas.",
+"Implementación de un sistema de monitoreo y evaluación para medir el impacto de los proyectos."
+],
+"implicaciones_formativas": [
+"Desarrolla la capacidad de los jueces de paz para identificar necesidades comunitarias y traducirlas en proyectos judiciales sociales viables.",
+"Fortalece habilidades en la formulación de objetivos, actividades, indicadores y presupuestos para iniciativas de justicia local.",
+"Promueve una visión estratégica para la sostenibilidad y el impacto a largo plazo de los proyectos de facilitación judicial."
+],
+"competencias_profesionales_asociadas": [
+"PFJYA2025-FJ-ESP-001-CP001: Diseña y lidera proyectos de impacto social desde el ámbito judicial, con enfoque participativo y habilidades comunicativas efectivas."
+],
+"relaciones_semanticas": [
+{
+  "tipo": "esParteDe",
+  "concepto_relacionado_ID": "N/A",
+  "descripcion_relacion": "La gestión de proyectos sociales es un componente de la administración judicial moderna y del acceso a la justicia."
+},
+{
+  "tipo": "requiereDe",
+  "concepto_relacionado_ID": "PFJYA2025-FJ-ESP-001-C002",
+  "descripcion_relacion": "La gestión efectiva de proyectos sociales requiere habilidades de liderazgo."
+},
+{
+  "tipo": "seComplementaCon",
+  "concepto_relacionado_ID": "PFJYA2025-FJ-ESP-001-C006",
+  "descripcion_relacion": "Se articula con la planificación estratégica para alinear los proyectos con los objetivos institucionales."
+}
+],
+"nivel_complejidad_conceptual": "Introductorio-Intermedio",
+"fecha_ultima_revision_experto": "2025-05-07",
+"experto_validador_id": "EXP-MAG-CSJ-003"
+}</code></pre>{
+"codigo_actividad_padre": "PFJYA2025-FJ-ESP-001",
+"ID_Nodo_Tematico": "PFJYA2025-FJ-ESP-001-C001",
+"tema_general": "Gestión Judicial Aplicada",
+"subtema": "Gestión de Proyectos Sociales en el Ámbito Judicial Comunitario",
+"concepto": "Introducción a la Gestión de Proyectos Sociales Judiciales",
+"descripcion_conceptual": "Conceptualización de la gestión de proyectos sociales, con énfasis en su aplicación para la mejora del acceso a la justicia y la resolución de conflictos a nivel comunitario, bajo la dirección de facilitadores judiciales.",
+"referencias_legales": [
+{
+  "fuente": "Ley del Organismo Judicial",
+  "articulo": "Artículos relativos a la administración de justicia y modernización (por ejemplo, Art. 54 funciones generales de la Presidencia, Art. 74, 75, 76, 95, 98, 100)",
+  "descripcion": "Base para la implementación de programas que mejoren el servicio de justicia."
+},
+{
+  "fuente": "Acuerdo 51-2014 CSJ",
+  "articulo": "Artículo 1 y 3",
+  "descripcion": "Creación y objetivos del Servicio Nacional de Facilitadores Judiciales, que incluye la promoción de proyectos para el acceso a la justicia."
+},
+{
+  "fuente": "Plan Estratégico Institucional del Organismo Judicial",
+  "seccion": "Ejes de modernización y acceso a la justicia",
+  "descripcion": "Marco para el desarrollo de proyectos que fortalezcan el sistema judicial y su relación con la comunidad."
+}
+],
+"jurisprudencia_relevante_guatemala": [
+{
+  "organo": "Corte de Constitucionalidad",
+  "expediente": "N/A (conceptual, buscar jurisprudencia sobre acceso a justicia y MASC)",
+  "fecha": "N/A",
+  "extracto": "Principios constitucionales que respaldan la implementación de mecanismos alternativos y programas de acceso a la justicia."
+}
+],
+"doctrina_aplicable": [
+{
+  "autor": "Instituto Latinoamericano de Planificación Económica y Social (ILPES/CEPAL)",
+  "obra": "Manual de Planificación, Seguimiento y Evaluación de Proyectos Sociales",
+  "concepto_clave": "Ciclo de vida de proyectos, marco lógico, indicadores de gestión."
+},
+{
+  "autor": "Project Management Institute (PMI)",
+  "obra": "Guía de los Fundamentos para la Dirección de Proyectos (Guía del PMBOK)",
+  "concepto_clave": "Áreas de conocimiento y procesos estándar en la dirección de proyectos, adaptables al contexto social."
+}
+],
+"aplicaciones_practicas": [
+"Diseño de un proyecto piloto de facilitación judicial en una nueva comunidad.",
+"Elaboración de un plan de capacitación continua para facilitadores judiciales basado en necesidades detectadas.",
+"Implementación de un sistema de monitoreo y evaluación para medir el impacto de los proyectos."
+],
+"implicaciones_formativas": [
+"Desarrolla la capacidad de los jueces de paz para identificar necesidades comunitarias y traducirlas en proyectos judiciales sociales viables.",
+"Fortalece habilidades en la formulación de objetivos, actividades, indicadores y presupuestos para iniciativas de justicia local.",
+"Promueve una visión estratégica para la sostenibilidad y el impacto a largo plazo de los proyectos de facilitación judicial."
+],
+"competencias_profesionales_asociadas": [
+"PFJYA2025-FJ-ESP-001-CP001: Diseña y lidera proyectos de impacto social desde el ámbito judicial, con enfoque participativo y habilidades comunicativas efectivas."
+],
+"relaciones_semanticas": [
+{
+  "tipo": "esParteDe",
+  "concepto_relacionado_ID": "N/A",
+  "descripcion_relacion": "La gestión de proyectos sociales es un componente de la administración judicial moderna y del acceso a la justicia."
+},
+{
+  "tipo": "requiereDe",
+  "concepto_relacionado_ID": "PFJYA2025-FJ-ESP-001-C002",
+  "descripcion_relacion": "La gestión efectiva de proyectos sociales requiere habilidades de liderazgo."
+},
+{
+  "tipo": "seComplementaCon",
+  "concepto_relacionado_ID": "PFJYA2025-FJ-ESP-001-C006",
+  "descripcion_relacion": "Se articula con la planificación estratégica para alinear los proyectos con los objetivos institucionales."
+}
+],
+"nivel_complejidad_conceptual": "Introductorio-Intermedio",
+"fecha_ultima_revision_experto": "2025-05-07",
+"experto_validador_id": "EXP-MAG-CSJ-003"
+}

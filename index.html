@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo Ontológico de Formación Judicial (MOFJ)</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="/api/placeholder/100/100" alt="Logo MOFJ" class="logo">
+            <h1>Modelo Ontológico de Formación Judicial (MOFJ)</h1>
+        </div>
+        <div class="header-controls">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Buscar por código o nombre...">
+                <button id="search-button"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="view-controls">
+                <button id="toggle-view" class="control-button" title="Cambiar vista"><i class="fas fa-sync-alt"></i></button>
+                <button id="fullscreen" class="control-button" title="Pantalla completa"><i class="fas fa-expand"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <nav id="layers-nav">
+        <ul>
+            <li data-layer="all" class="active">Vista Multicapa</li>
+            <li data-layer="1">Capa 1: Académico-Administrativa</li>
+            <li data-layer="2">Capa 2: Temático-Taxonómica</li>
+            <li data-layer="3">Capa 3: Taxonomía Global Enriquecida</li>
+            <li data-layer="4">Capa 4: Marco Formal de Competencias</li>
+            <li data-layer="5">Capa 5: Sistema de Evaluación</li>
+            <li data-layer="6">Capa 6: Validación Colectiva</li>
+        </ul>
+    </nav>
+
+    <main>
+        <div id="visualization-container">
+            <div id="main-visualization"></div>
+            <div id="visualization-controls">
+                <div class="filter-group">
+                    <label for="filter-type">Filtrar por:</label>
+                    <select id="filter-type">
+                        <option value="all">Todos</option>
+                        <option value="eje">Eje Formativo</option>
+                        <option value="area">Área Principal</option>
+                        <option value="competencia">Competencia</option>
+                    </select>
+                    <select id="filter-value" disabled>
+                        <option value="">Seleccione un valor</option>
+                    </select>
+                </div>
+                <div class="zoom-controls">
+                    <button id="zoom-in"><i class="fas fa-plus"></i></button>
+                    <button id="zoom-out"><i class="fas fa-minus"></i></button>
+                    <button id="zoom-reset"><i class="fas fa-home"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <aside id="detail-panel" class="hidden">
+            <div class="panel-header">
+                <h3 id="detail-title">Detalles</h3>
+                <button id="close-detail"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="panel-body">
+                <div id="entity-details"></div>
+                <div id="related-entities"></div>
+                <div id="validation-metrics" class="hidden">
+                    <h4>Métricas de Validación</h4>
+                    <div class="validation-container">
+                        <div id="heatmap-validation"></div>
+                        <div id="star-validation"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <button id="export-detail"><i class="fas fa-file-export"></i> Exportar</button>
+            </div>
+        </aside>
+    </main>
+
+    <div id="capa-section" class="capa-info hidden">
+        <div class="capa-header">
+            <h2 id="capa-title">Capa 1: Académico-Administrativa</h2>
+            <p id="capa-description">Información sobre la organización de la oferta formativa.</p>
+        </div>
+        <div class="capa-stats">
+            <div class="stat-box">
+                <span id="entity-count" class="stat-number">0</span>
+                <span class="stat-label">Entidades</span>
+            </div>
+            <div class="stat-box">
+                <span id="relation-count" class="stat-number">0</span>
+                <span class="stat-label">Relaciones</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="multicapa-section" class="active">
+        <div class="multicapa-header">
+            <h2>Visualización Multicapa</h2>
+            <div class="view-selector">
+                <button data-view="graph" class="active">Grafo</button>
+                <button data-view="sunburst">Radial</button>
+                <button data-view="sankey">Flujo</button>
+            </div>
+        </div>
+        <div class="view-container">
+            <div id="graph-view" class="active"></div>
+            <div id="sunburst-view"></div>
+            <div id="sankey-view"></div>
+        </div>
+    </div>
+
+    <div id="capa6-section" class="hidden">
+        <div class="capa6-header">
+            <h2>Capa 6: Validación Colectiva</h2>
+            <div class="view-selector">
+                <button data-view="heatmap" class="active">Mapa de Calor</button>
+                <button data-view="star">Diagrama de Estrella</button>
+                <button data-view="3d">Visualización 3D</button>
+            </div>
+        </div>
+        <div class="view-container">
+            <div id="heatmap-view" class="active"></div>
+            <div id="star-view"></div>
+            <div id="view-3d"></div>
+        </div>
+        <div class="validation-legend">
+            <div class="legend-item">
+                <div class="color-box high-consensus"></div>
+                <span>Alto Consenso</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box medium-consensus"></div>
+                <span>Consenso Medio</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box low-consensus"></div>
+                <span>Bajo Consenso</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box controversial"></div>
+                <span>Controversial</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Ecosistema Inteligente de Conocimiento - Organismo Judicial de Guatemala © 2025</p>
+        <div class="footer-links">
+            <a href="#" id="about-link">Acerca de</a>
+            <a href="#" id="help-link">Ayuda</a>
+        </div>
+    </footer>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Cargando visualización...</p>
+    </div>
+
+    <div id="modal" class="hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Título</h3>
+                <button id="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modal-body">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulos de datos -->
+    <script src="dataCapa1.js"></script>
+    <script src="dataCapa2.js"></script>
+    <script src="dataCapa3.js"></script>
+    <script src="dataCapa4.js"></script>
+    <script src="dataCapa5.js"></script>
+    <script src="dataCapa6.js"></script>
+    
+    <!-- Módulos de visualización -->
+    <script src="visualization.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

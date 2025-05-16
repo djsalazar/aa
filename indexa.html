@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización Interactiva MOFJ v2</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
+<body>
+    <header>
+        <h1>Modelo Ontológico de Formación Judicial (MOFJ) - Visualización Interactiva v2</h1>
+        <nav>
+            <button id="btnCapa1" class="nav-btn">Capa 1: Académico-Admin.</button>
+            <button id="btnCapa2" class="nav-btn">Capa 2: Temático-Taxon.</button>
+            <button id="btnCapa3" class="nav-btn">Capa 3: Taxonomía Global</button>
+            <button id="btnCapa4" class="nav-btn">Capa 4: Competencias</button>
+            <button id="btnCapa5" class="nav-btn">Capa 5: Evaluación Dominio</button>
+            <button id="btnCapa6" class="nav-btn">Capa 6: Validación Colectiva</button>
+            <button id="btnMultidimensional" class="nav-btn">Vis. Multidimensional</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="capa1" class="capa-visualizacion active">
+            <h2>Capa 1: Académico-Administrativa</h2>
+            <div class="info-capa">
+                <p>Organización de la oferta formativa: programas, ejes, actividades (cursos, talleres), códigos, modalidad, duración, objetivos, etc.</p>
+                <p><strong>Extracto del Documento:</strong> <em>"Capa 1: Académico-Administrativa. Incluye las entidades y relaciones relativas a la organización de la oferta formativa..."</em> (MOFJ, p. 12)</p>
+            </div>
+            <div class="filtros">
+                <label for="filtro-eje-c1">Eje Formativo:</label>
+                <select id="filtro-eje-c1"><option value="todos">Todos</option></select>
+                <label for="filtro-tipo-formacion-c1">Tipo Formación:</label>
+                <select id="filtro-tipo-formacion-c1"><option value="todos">Todos</option></select>
+            </div>
+            <div id="visCapa1" class="vis-container card-container">
+                </div>
+        </section>
+
+        <section id="capa2" class="capa-visualizacion">
+            <h2>Capa 2: Temático-Taxonómica</h2>
+            <div class="info-capa">
+                <p>Clasificación temática y disciplinar del contenido: áreas jurídicas principales, sub-áreas, temas específicos, ejes transversales.</p>
+                <p><strong>Extracto del Documento:</strong> <em>"Capa 2: Temático-Taxonómica. Representa la clasificación temática y disciplinar del contenido..."</em> (MOFJ, p. 12)</p>
+            </div>
+             <div class="filtros">
+                <label for="select-actividad-c2">Ver Taxonomía de Actividad (Capa 1):</label>
+                <select id="select-actividad-c2"><option value="">Seleccione una actividad...</option></select>
+            </div>
+            <div id="visCapa2" class="vis-container">
+                </div>
+        </section>
+
+        <section id="capa3" class="capa-visualizacion">
+            <h2>Capa 3: Taxonomía Global Enriquecida</h2>
+            <div class="info-capa">
+                <p>Nivel semántico más fino: conceptos clave, referencias normativas, doctrina, jurisprudencia y competencias asociadas a cada actividad formativa.</p>
+                <p><strong>Extracto del Documento:</strong> <em>"Capa 3: Taxonomía Global Enriquecida. Integra el nivel semántico más fino..."</em> (MOFJ, p. 13)</p>
+            </div>
+            <div class="filtros">
+                <label for="select-actividad-c3">Ver Conceptos de Actividad (Capa 1):</label>
+                <select id="select-actividad-c3"><option value="">Seleccione una actividad...</option></select>
+            </div>
+            <div id="visCapa3" class="vis-container graph-container">
+                </div>
+        </section>
+
+        <section id="capa4" class="capa-visualizacion">
+            <h2>Capa 4: Marco Formal de Competencias</h2>
+            <div class="info-capa">
+                <p>Catálogo unificado de competencias, organizadas por categorías, con niveles de dominio esperados por rol y alineación con estándares.</p>
+                <p><strong>Extracto del Documento:</strong> <em>"El objetivo de la Capa 4 es abstraer y organizar dichas competencias en un catálogo unificado..."</em> (MOFJ, pp. 21-22)</p>
+            </div>
+            <div class="filtros">
+                <label for="filtro-categoria-c4">Categoría Competencia:</label>
+                <select id="filtro-categoria-c4"><option value="todos">Todas</option></select>
+            </div>
+            <div id="visCapa4" class="vis-container">
+                </div>
+        </section>
+
+        <section id="capa5" class="capa-visualizacion">
+            <h2>Capa 5: Sistema de Evaluación por Niveles de Dominio</h2>
+            <div class="info-capa">
+                <p>Definición de cómo verificar cada competencia en un determinado nivel de dominio, asociando competencias con indicadores de logro e instrumentos de evaluación.</p>
+                <p><strong>Extracto del Documento:</strong> <em>"...la capa 5 define cómo verificar cada competencia en un determinado nivel de dominio."</em> (MOFJ, p. 9, p. 25)</p>
+            </div>
+            <div class="filtros">
+                <label for="select-competencia-c5">Ver Evaluación de Competencia (Capa 4):</label>
+                <select id="select-competencia-c5"><option value="">Seleccione una competencia...</option></select>
+            </div>
+            <div id="visCapa5" class="vis-container">
+                </div>
+        </section>
+
+        <section id="capa6" class="capa-visualizacion">
+            <h2>Capa 6: Ontología de Validación Colectiva</h2>
+            <div class="info-capa">
+                <p>Validación de nodos conceptuales por una diversidad de personas para asegurar un marco de verdad, mitigar sesgos y visualizar el consenso.</p>
+                <p><strong>Extracto de tu planteamiento:</strong> <em>"...debería existir una validación por la mayor cantidad de diversa… esto se grabaría y mostraría un marco de ‘verdad’ incluso gráfico..."</em></p>
+            </div>
+            <div class="filtros">
+                <label for="select-nodo-c6">Ver Validación de Nodo Conceptual (Capa 3):</label>
+                <select id="select-nodo-c6"><option value="">Seleccione un nodo conceptual...</option></select>
+            </div>
+            <div id="visCapa6" class="vis-container">
+                </div>
+        </section>
+
+        <section id="multidimensional" class="capa-visualizacion">
+            <h2>Visualización Multidimensional de Conexiones</h2>
+            <div class="info-capa">
+                <p>Exploración de las interrelaciones entre elementos de diferentes capas. Por ejemplo, cómo una Actividad Formativa (C1) se conecta con sus Temas (C2), Conceptos (C3), y las Competencias (C4) que desarrolla.</p>
+            </div>
+            <div class="filtros">
+                <label for="select-actividad-multi">Seleccionar Actividad Formativa Principal:</label>
+                <select id="select-actividad-multi"><option value="">Seleccione una actividad...</option></select>
+                <label for="slider-profundidad-multi">Profundidad de Conexiones:</label>
+                <input type="range" id="slider-profundidad-multi" min="1" max="3" value="2">
+                <span id="valor-profundidad-multi">2</span>
+            </div>
+            <div id="visMultidimensional" class="vis-container graph-container">
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Proyecto MOFJ - Organismo Judicial de Guatemala (Conceptualización v2) - Mayo 2025</p>
+    </footer>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="modal-title">Detalle del Elemento</h3>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="c12.js"></script>
+    <script src="c3.js"></script>
+    <script src="dataCapa4.js"></script>
+    <script src="dataCapa5.js"></script>
+    <script src="dataCapa6.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
